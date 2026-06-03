@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prime Ride - Location de vehicules</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:      #080808;
+      --deep:       #0f1115;
+      --card:       #13161c;
+      --border:     rgba(255,255,255,0.06);
+      --border2:    rgba(255,255,255,0.11);
+      --gold:       #c8a45a;
+      --gold-light: #e2c07a;
+      --gold-dim:   rgba(200,164,90,0.18);
+      --white:      #f0ece5;
+      --muted:      #7a7a7a;
+      --muted2:     #555;
+      --font-d:     'Playfair Display', serif;
+      --font-b:     'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-b);
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* -- NAV -- */
+    header {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0 5%;
+      background: rgba(8,8,8,0.88);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .nav-logo__car {
+      width: 72px;
+      height: 28px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-logo__car svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .nav-logo__name {
+      font-family: var(--font-d);
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .menu { display: flex; gap: 2rem; }
+
+    .menu a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 500;
+      transition: color 0.25s;
+      position: relative;
+    }
+
+    .menu a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 1px;
+      background: var(--gold);
+      transition: width 0.3s;
+    }
+
+    .menu a:hover { color: var(--white); }
+    .menu a:hover::after { width: 100%; }
+    .menu a.active { color: var(--gold); }
+    .menu a.active::after { width: 100%; }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .nav-right .social-icon {
+      color: var(--muted2);
+      font-size: 0.82rem;
+      text-decoration: none;
+      transition: color 0.25s;
+    }
+    .nav-right .social-icon:hover { color: var(--gold); }
+
+    .login-btn {
+      background: transparent;
+      border: 1px solid rgba(200,164,90,0.4);
+      color: var(--gold);
+      padding: 0.45rem 1.2rem;
+      font-family: var(--font-b);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .login-btn:hover { background: var(--gold-dim); border-color: var(--gold); }
+
+    /* -- HERO -- */
+    .hero {
+      padding-top: 70px;
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding-bottom: 3rem;
+      padding-left: 5%;
+      background: linear-gradient(140deg, #0c0a07 0%, #151109 55%, #080808 100%);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero__car-bg {
+      position: absolute;
+      right: 3%;
+      bottom: -10px;
+      width: 480px;
+      opacity: 0.07;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .hero__bg-text {
+      position: absolute;
+      right: -3rem; bottom: -2rem;
+      font-family: var(--font-d);
+      font-size: 13rem;
+      font-weight: 900;
+      font-style: italic;
+      color: rgba(200,164,90,0.03);
+      letter-spacing: -0.03em;
+      user-select: none;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .hero__line {
+      width: 36px; height: 1px;
+      background: var(--gold);
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.1s ease forwards;
+    }
+
+    .hero__tag {
+      font-size: 0.68rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.7rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.2s ease forwards;
+    }
+
+    .hero h1 {
+      font-family: var(--font-d);
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--white);
+      opacity: 0;
+      animation: fadeUp 0.6s 0.3s ease forwards;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* -- BRAND BUTTON -- */
+    .brand-btn-wrap {
+      padding: 4rem 5% 0;
+      display: flex;
+      align-items: center;
+      gap: 3rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.5s ease forwards;
+    }
+
+    .pr-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .pr-btn__dash {
+      width: 28px; height: 1px;
+      background: rgba(200,164,90,0.5);
+      flex-shrink: 0;
+    }
+
+    .pr-btn__track { position: relative; }
+
+    .pr-btn__text {
+      display: block;
+      font-family: var(--font-d);
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #c8a45a, #e2c07a, #c8a45a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      white-space: nowrap;
+    }
+
+    .pr-btn__line {
+      position: absolute;
+      bottom: -6px; left: 0;
+      height: 1px; width: 100%;
+      background: linear-gradient(90deg, #c8a45a, transparent);
+    }
+
+    .pr-sub {
+      font-family: var(--font-b);
+      font-size: 0.62rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(200,164,90,0.45);
+    }
+
+    /* -- CONTACT SECTION -- */
+    .contact-section {
+      padding: 5rem 5%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.55fr;
+      gap: 2.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      align-items: start;
+    }
+
+    .contact-info {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 2.8rem 2.2rem;
+      position: sticky;
+      top: 82px;
+      opacity: 0;
+      animation: fadeUp 0.65s 0.2s ease forwards;
+    }
+
+    .contact-info h2 {
+      font-family: var(--font-d);
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+
+    .contact-info > p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 2.2rem;
+    }
+
+    .gold-rule {
+      width: 36px; height: 1.5px;
+      background: var(--gold);
+      margin-bottom: 2.2rem;
+    }
+
+    .info-item {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 1.6rem;
+    }
+
+    .info-icon {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: rgba(200,164,90,0.08);
+      border: 1px solid rgba(200,164,90,0.18);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold);
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .info-item h4 {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.3rem;
+      font-weight: 500;
+    }
+
+    .info-item p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .info-social {
+      display: flex;
+      gap: 0.7rem;
+      margin-top: 2.2rem;
+      padding-top: 1.8rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .info-social a {
+      width: 34px; height: 34px;
+      border: 1px solid var(--border2);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-decoration: none;
+      transition: all 0.25s;
+    }
+
+    .info-social a:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: var(--gold-dim);
+    }
+
+    .contact-form {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 2.8rem 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.65s 0.35s ease forwards;
+    }
+
+    .contact-form h3 {
+      font-family: var(--font-d);
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.35rem;
+    }
+
+    .contact-form > p {
+      font-size: 0.83rem;
+      color: var(--muted);
+      margin-bottom: 2.2rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.1rem;
+    }
+
+    .form-group { margin-bottom: 1.3rem; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.63rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.45rem;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--white);
+      font-family: var(--font-b);
+      font-size: 0.85rem;
+      font-weight: 300;
+      padding: 0.8rem 1rem;
+      outline: none;
+      transition: border-color 0.25s, background 0.25s;
+      appearance: none;
+    }
+
+    .form-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237a7a7a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      cursor: pointer;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: rgba(122,122,122,0.45); }
+
+    .form-group select option { background: var(--deep); }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: rgba(200,164,90,0.5);
+      background: rgba(200,164,90,0.03);
+    }
+
+    .form-group textarea { resize: vertical; min-height: 120px; }
+
+    .submit-btn {
+      width: 100%;
+      background: var(--gold);
+      color: var(--black);
+      border: none;
+      padding: 0.95rem;
+      font-family: var(--font-b);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 0.25s, transform 0.15s;
+      margin-top: 0.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+    }
+
+    .submit-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .submit-btn:active { transform: translateY(0); }
+
+    .success-msg {
+      display: none;
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+
+    .success-msg .check {
+      width: 58px; height: 58px;
+      border-radius: 50%;
+      background: rgba(200,164,90,0.1);
+      border: 1px solid var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold);
+      font-size: 1.3rem;
+      margin: 0 auto 1.2rem;
+    }
+
+    .success-msg h4 {
+      font-family: var(--font-d);
+      font-size: 1.3rem;
+      color: var(--white);
+      margin-bottom: 0.4rem;
+    }
+
+    .success-msg p { color: var(--muted); font-size: 0.83rem; }
+
+    /* -- MAP -- */
+    .map-section { padding: 0 5% 5rem; }
+    .map-wrap { max-width: 1100px; margin: 0 auto; }
+
+    .map-label {
+      font-size: 0.63rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .map-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border2);
+    }
+
+    .map-container {
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+      height: 240px;
+      background: var(--card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .map-container::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(200,164,90,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,164,90,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .map-inner { position: relative; text-align: center; color: var(--muted); }
+
+    .map-inner i {
+      font-size: 1.8rem;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 0.7rem;
+    }
+
+    .map-inner p { font-size: 0.82rem; }
+
+    /* -- FOOTER -- */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-logo {
+      font-family: var(--font-d);
+      font-size: 0.95rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    footer p { font-size: 0.75rem; color: var(--muted2); }
+
+    .footer-links { display: flex; gap: 1.5rem; }
+
+    .footer-links a {
+      font-size: 0.75rem;
+      color: var(--muted2);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--gold); }
+
+    /* -- ANIMATIONS -- */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* -- RESPONSIVE -- */
+    @media (max-width: 820px) {
+      .contact-grid { grid-template-columns: 1fr; }
+      .contact-info { position: static; }
+      .form-row { grid-template-columns: 1fr; }
+      .menu { display: none; }
+      .brand-btn-wrap { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      footer { flex-direction: column; gap: 1.2rem; text-align: center; }
+      .footer-links { justify-content: center; }
+      .hero__car-bg { width: 260px; opacity: 0.05; }
+    }
+  </style>
+    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="general.css">
+    <link rel="stylesheet" href="theme.css">
+    <style>
+      .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+        z-index: 1;
+      }
+      .hero .text {
+        z-index: 2;
+      }
+
+      /* -- How to Reserve Section ---------------- */
+      .how-to-reserve-section {
+        padding: 5rem 5%;
+        background: linear-gradient(180deg, rgba(8,8,8,0.5) 0%, rgba(8,8,8,0.8) 100%);
+      }
+      .how-to-reserve-section h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.2rem;
+        color: var(--gold, #d4af37);
+        text-align: center;
+        margin-bottom: 0.5rem;
+      }
+      .how-to-reserve-section .section-subtitle {
+        text-align: center;
+        color: var(--muted, #d8cfbc);
+        margin-bottom: 3rem;
+        font-size: 1rem;
+      }
+      .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .step-card {
+        background: #121212;
+        border: 1px solid rgba(212, 175, 55, 0.24);
+        border-radius: 8px;
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+      .step-card:hover {
+        border-color: var(--gold, #d4af37);
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      }
+      .step-number {
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 40px;
+        background: var(--gold, #d4af37);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #080808;
+      }
+      .step-icon {
+        width: 70px;
+        height: 70px;
+        background: rgba(212, 175, 55, 0.12);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2rem;
+        color: var(--gold, #d4af37);
+      }
+      .step-card h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.3rem;
+        color: #f7f1df;
+        margin-bottom: 0.8rem;
+      }
+      .step-card p {
+        color: #d8cfbc;
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+      .steps-cta {
+        text-align: center;
+        margin-top: 3rem;
+      }
+      .steps-cta .btn {
+        display: inline-block;
+        background: var(--gold, #d4af37);
+        color: #080808;
+        padding: 1rem 2.5rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        border-radius: 999px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+      }
+      .steps-cta .btn:hover {
+        background: #f1d27a;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+      }
+    </style>
+    <script src="script.js"></script>
+</head>
+<body>
+    <header>
+        <nav style="border-bottom:none; backdrop-filter:none; background:transparent;">
+            <a class="logo site-logo" href="index.html" aria-label="Prime Ride - Accueil">
+                <img src="img/logoimg.jfif" alt="Logo Prime Ride">
+                <span>Prime Ride</span>
+            </a>
+            <div class="menu">
+                <a href="#home">Accueil</a>
+                <a href="about.html">A propos</a>
+                <a href="vehicules.html">Vehicules</a>
+                <a href="#services">Services</a>
+                <a href="#specials">Offres</a>
+                <a href="contact.html">Contact</a>
+            </div>
+
+            <div class="social">
+                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="vehicules.html" class="book-now-btn">Reserver</a>
+            </div>
+        </nav>
+    </header>
+    
+    <section class="hero" id="home">
+        <div class="text">
+            <h4>Location de vehicules en Algerie</h4>
+            <h1>Trouvez votre <br> <span>Vehicule ideal</span></h1>
+            <p>Choisissez une categorie et reservez en quelques minutes.</p>
+            <div class="hero-buttons">
+                <a href="vehicules.html" class="btn">Explorer</a>
+                <a href="about.html" class="btn-outline">A propos de nous</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="categories-section" id="categories">
+        <div class="container">
+            <h2>Nos Categories</h2>
+            <p class="section-subtitle">Choisissez rapidement le type de vehicule adapte a votre trajet</p>
+
+            <div class="home-categories-grid">
+                <a class="home-category-card" href="vehicules.html?cat=citadine">
+                    <div class="home-category-content">
+                        <div class="home-category-icon"><i class="fas fa-city"></i></div>
+                        <h3>Citadines</h3>
+                        <p>Compactes, economiques et parfaites pour la ville.</p>
+                        <span>6 vehicules</span>
+                    </div>
+                </a>
+
+                <a class="home-category-card" href="vehicules.html?cat=suv">
+                    <div class="home-category-content">
+                        <div class="home-category-icon"><i class="fas fa-car-side"></i></div>
+                        <h3>SUV</h3>
+                        <p>Spacieux et robustes pour la famille ou l'aventure.</p>
+                        <span>6 vehicules</span>
+                    </div>
+                </a>
+
+                <a class="home-category-card" href="vehicules.html?cat=berline">
+                    <div class="home-category-content">
+                        <div class="home-category-icon"><i class="fas fa-taxi"></i></div>
+                        <h3>Berlines</h3>
+                        <p>Elegance et confort pour vos deplacements premium.</p>
+                        <span>6 vehicules</span>
+                    </div>
+                </a>
+
+                <a class="home-category-card" href="vehicules.html?cat=utilitaire">
+                    <div class="home-category-content">
+                        <div class="home-category-icon"><i class="fas fa-truck"></i></div>
+                        <h3>Utilitaires</h3>
+                        <p>Grand volume pour vos demenagements et livraisons.</p>
+                        <span>6 vehicules</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="services-section" id="services">
+        <div class="container">
+            <h2>Nos Services</h2>
+            <p class="section-subtitle">Nous offrons plus qu'une simple location de voiture</p>
+            
+             <div class="services-grid" aria-label="Liste des services Prime Ride">
+                <button class="service-card service-card-btn" type="button" data-service="airport" aria-pressed="false">
+                    <div class="service-icon">
+                        <i class="fas fa-plane-arrival"></i>
+                    </div>
+                    <h3>Prise en charge a l'aeroport</h3>
+                    <p>Accueil, assistance bagages et depart rapide depuis les principaux aeroports.</p>
+                </button>
+                <button class="service-card service-card-btn" type="button" data-service="longue" aria-pressed="false">
+                    <div class="service-icon">
+                        <i class="fas fa-road"></i>
+                    </div>
+                    <h3>Location Longue Duree</h3>
+                    <p>Formules mensuelles souples pour rouler longtemps sans contrainte d'achat.</p>
+                </button>
+                <button class="service-card service-card-btn" type="button" data-service="entreprise" aria-pressed="false">
+                    <div class="service-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h3>Programme Entreprise</h3>
+                    <p>Gestion de flotte, priorite de reservation et facturation claire pour vos equipes.</p>
+                </button>
+                <button class="service-card service-card-btn" type="button" data-service="cadeaux" aria-pressed="false">
+                    <div class="service-icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <h3>Cheques Cadeaux</h3>
+                    <p>Offrez une experience de conduite elegante, flexible et facile a reserver.</p>
+                </button>
+            </div>
+            <div class="service-details" id="serviceDetails" aria-live="polite"></div>
+        </div>
+    </section>
+
+    <section class="testimonials-section">
+        <div class="container">
+            <h2>Ce Que Disent Nos Clients</h2>
+            <p class="section-subtitle">Ecoutez nos clients satisfaits</p>
+            
+            <div class="testimonials-slider">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p>"La Clio que j'ai louee etait en parfait etat et a rendu mon voyage d'affaires beaucoup plus agreable. Excellent service !"</p>
+                        <div class="client-info">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Karim Benali">
+                            <div>
+                                <h4>Karim Benali</h4>
+                                <span>Cadre d'entreprise</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p>"Nos vacances en famille ont ete formidables grace au SUV Dacia Duster que nous avons loue. Processus fluide de bout en bout."</p>
+                        <div class="client-info">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Fatima Zohra">
+                            <div>
+                                <h4>Fatima Zohra</h4>
+                                <span>Vacanciere en famille</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <p>"En tant que passionne d'automobile, j'apprecie la flotte bien entretenue. La Mercedes etait tout ce que j'esperais !"</p>
+                        <div class="client-info">
+                            <img src="https://randomuser.me/api/portraits/men/52.jpg" alt="Amine Boudiaf">
+                            <div>
+                                <h4>Amine Boudiaf</h4>
+                                <span>Passionne d'automobile</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p>"Service impeccable et vehicules toujours propres. J'ai loue plusieurs fois pour mes deplacements professionnels et je suis toujours satisfait."</p>
+                        <div class="client-info">
+                            <img src="https://randomuser.me/api/portraits/men/85.jpg" alt="Yacine Hadj">
+                            <div>
+                                <h4>Yacine Hadj</h4>
+                                <span>Entrepreneur</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p>"La location avec Prime Ride est toujours simple et rapide. Les prix sont competitifs et le personnel est tres professionnel."</p>
+                        <div class="client-info">
+                            <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Leila Cherif">
+                            <div>
+                                <h4>Leila Cherif</h4>
+                                <span>Professeure</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <p>"J'ai loue un utilitaire pour mon demenagement et tout s'est parfaitement passe. Vehicule en bon etat et service client au top."</p>
+                        <div class="client-info">
+                            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Mohamed Kaci">
+                            <div>
+                                <h4>Mohamed Kaci</h4>
+                                <span>Artisan</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-to-reserve-section">
+        <div class="container">
+            <h2>Comment Reserver</h2>
+            <p class="section-subtitle">Reservez votre vehicule en 4 etapes simples</p>
+            
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>Choisissez votre vehicule</h3>
+                    <p>Parcourez notre catalogue et selectionnez la categorie et le vehicule qui correspondent a vos besoins.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3>Selectionnez vos dates</h3>
+                    <p>Indiquez vos dates de prise en charge et de retour pour verifier la disponibilite du vehicule.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <i class="fas fa-user-edit"></i>
+                    </div>
+                    <h3>Remplissez le formulaire</h3>
+                    <p>Completez vos informations personnelles et les details de la reservation.</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <div class="step-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3>Confirmez et reservez</h3>
+                    <p>Verifiez les details et confirmez votre reservation. Vous recevrez une confirmation par email.</p>
+                </div>
+            </div>
+            
+            <div class="steps-cta">
+                <a href="vehicules.html" class="btn">Commencer ma reservation</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="specials-section" id="specials">
+        <div class="container">
+            <h2>Offres Speciales</h2>
+            <p class="section-subtitle">Offres exclusives pour nos clients fideles</p>
+            
+            <div class="specials-grid">
+                <div class="special-card weekend-special">
+                    <div class="special-badge">Special Week-end</div>
+                    <h3>Escapade du Week-end</h3>
+                    <p>Louez n'importe quelle voiture de luxe pour le week-end et obtenez 20% de reduction</p>
+                    <div class="special-price">
+                        <span class="old-price">12 000 DA</span>
+                        <span class="new-price">9 600 DA</span>
+                    </div>
+                    <a href="vehicules.html" class="btn">Reserver</a>
+                </div>
+                <div class="special-card monthly-special">
+                    <div class="special-badge">Offre Mensuelle</div>
+                    <h3>Location Prolongee</h3>
+                    <p>Locations mensuelles avec kilometrage illimite et assurance gratuite</p>
+                    <div class="special-price">
+                        <span class="old-price">90 000 DA/mois</span>
+                        <span class="new-price">75 000 DA/mois</span>
+                    </div>
+                    <a href="vehicules.html" class="btn">Reserver</a>
+                </div>
+                <div class="special-card corporate-special">
+                    <div class="special-badge">Entreprise</div>
+                    <h3>Programme Affaires</h3>
+                    <p>Tarifs speciaux et avantages pour les clients professionnels</p>
+                    <div class="special-price">
+                        <span>Tarification sur mesure</span>
+                    </div>
+                    <a href="contact.html" class="btn">Contactez-nous</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-col">
+                    <a class="footer-logo" href="index.html" style="display:block; margin-bottom: 20px; text-decoration:none;">Prime Ride</a>
+                    <p>Service de location de voitures offrant la meilleure selection de vehicules pour chaque besoin et occasion.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h3>Liens Rapides</h3>
+                    <ul>
+                        <li><a href="#home">Accueil</a></li>
+                        <li><a href="about.html">A propos</a></li>
+                        <li><a href="#categories">Nos categories</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#specials">Offres Speciales</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Services</h3>
+                    <ul>
+                        <li><a href="#">Prise en charge a l'aeroport</a></li>
+                        <li><a href="#">Location Longue Duree</a></li>
+                        <li><a href="#">Programme Entreprise</a></li>
+                        <li><a href="#">Cheques Cadeaux</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Newsletter</h3>
+                    <p>Inscrivez-vous a notre newsletter pour des offres speciales et des mises a jour.</p>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Votre Email" required>
+                        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>(c) 2026 Prime Ride Location de Vehicules. Tous droits reserves.</p>
+            </div>
+        </div>
+    </footer>
+
+<script>
+// Active menu link based on scroll position
+const sections = document.querySelectorAll('section[id]');
+const menuLinks = document.querySelectorAll('.menu a');
+
+window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (pageYOffset >= sectionTop - 200) {
+            current = section.getAttribute('id');
+        }
+    });
+
+    menuLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+        }
+    });
+});
+
+// Handle initial hash
+window.addEventListener('load', () => {
+    const hash = window.location.hash.substring(1);
+    if (hash) {
+        menuLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${hash}`) {
+                link.classList.add('active');
+            }
+        });
+    }
+});
+</script>
+</body>
+</html>

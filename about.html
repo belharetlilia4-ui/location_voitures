@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prime Ride - A propos</title>
+  <link rel="stylesheet" href="about.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .video-background { margin-top: 0; }
+    .about-features { list-style: none; padding-top: 20px; }
+    .about-features li { margin-bottom: 10px; }
+    .about-features i { color: var(--green); margin-right: 10px; }
+  </style>
+  <link rel="stylesheet" href="home.css">
+  <link rel="stylesheet" href="general.css">
+  <script src="script.js"></script>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body>
+
+    <header>
+        <nav style="border-bottom:none; backdrop-filter:none; background:transparent;">
+            <a class="logo site-logo" href="index.html" aria-label="Prime Ride - Accueil">
+                <img src="img/logoimg.jfif" alt="Logo Prime Ride">
+                <span>Prime Ride</span>
+            </a>
+            <div class="menu">
+                <a href="index.html">Accueil</a>
+                <a href="about.html">A propos</a>
+                <a href="vehicules.html">Vehicules</a>
+                <a href="index.html#services">Services</a>
+                <a href="index.html#specials">Offres</a>
+                <a href="contact.html">Contact</a>
+            </div>
+
+            <div class="social">
+                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="vehicules.html" class="book-now-btn">Reserver</a>
+            </div>
+        </nav>
+    </header>
+
+<section class="video-background">
+    <video autoplay muted loop playsinline preload="metadata" poster="img/audi-r8.jpg" id="aboutVideo">
+        <source src="img/about-luxury-car-slow.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay" style="background-color: rgba(0, 0, 0, 0.4);"></div>
+    <div class="video-content">
+        <div class="container">
+            <div class="about-text">
+                <h2>A propos de Prime Ride</h2>
+                <p>Prime Ride est votre partenaire de confiance pour la location de voitures premium en Algérie. Depuis 2010, nous nous engageons à offrir une sélection exceptionnelle de véhicules haut de gamme et une expérience client incomparable.</p>
+                <p>Notre mission est simple : fournir un service de qualité supérieure avec des véhicules impeccablement entretenus et un support client disponible 24/7 pour garantir votre satisfaction.</p>
+                <ul class="about-features">
+                    <li><i class="fas fa-check-circle"></i> Support Client 24/7</li>
+                    <li><i class="fas fa-check-circle"></i> Pas de frais caches</li>
+                    <li><i class="fas fa-check-circle"></i> Annulation gratuite</li>
+                    <li><i class="fas fa-check-circle"></i> Vehicules inspectes et garantis</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>(c) 2026 <span>Prime Ride</span> - Tous droits reserves</footer>
+
+</body>
+</html>

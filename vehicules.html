@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prime Ride - Vehicules</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:      #080808;
+      --deep:       #0f1115;
+      --card:       #13161c;
+      --border:     rgba(255,255,255,0.06);
+      --border2:    rgba(255,255,255,0.11);
+      --gold:       #c8a45a;
+      --gold-light: #e2c07a;
+      --gold-dim:   rgba(200,164,90,0.18);
+      --white:      #f0ece5;
+      --muted:      #7a7a7a;
+      --muted2:     #555;
+      --font-d:     'Playfair Display', serif;
+      --font-b:     'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-b);
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* -- NAV -- */
+    header {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0 5%;
+      background: rgba(8,8,8,0.88);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .nav-logo__car {
+      width: 72px;
+      height: 28px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-logo__car svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .nav-logo__name {
+      font-family: var(--font-d);
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .menu { display: flex; gap: 2rem; }
+
+    .menu a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 500;
+      transition: color 0.25s;
+      position: relative;
+    }
+
+    .menu a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 1px;
+      background: var(--gold);
+      transition: width 0.3s;
+    }
+
+    .menu a:hover { color: var(--white); }
+    .menu a:hover::after { width: 100%; }
+    .menu a.active { color: var(--gold); }
+    .menu a.active::after { width: 100%; }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .nav-right .social-icon {
+      color: var(--muted2);
+      font-size: 0.82rem;
+      text-decoration: none;
+      transition: color 0.25s;
+    }
+    .nav-right .social-icon:hover { color: var(--gold); }
+
+    .login-btn {
+      background: transparent;
+      border: 1px solid rgba(200,164,90,0.4);
+      color: var(--gold);
+      padding: 0.45rem 1.2rem;
+      font-family: var(--font-b);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.25s, border-color 0.25s;
+    }
+    .login-btn:hover { background: var(--gold-dim); border-color: var(--gold); }
+
+    /* -- HERO -- */
+    .hero {
+      padding-top: 70px;
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding-bottom: 3rem;
+      padding-left: 5%;
+      background: linear-gradient(140deg, #0c0a07 0%, #151109 55%, #080808 100%);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero__car-bg {
+      position: absolute;
+      right: 3%;
+      bottom: -10px;
+      width: 480px;
+      opacity: 0.07;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .hero__bg-text {
+      position: absolute;
+      right: -3rem; bottom: -2rem;
+      font-family: var(--font-d);
+      font-size: 13rem;
+      font-weight: 900;
+      font-style: italic;
+      color: rgba(200,164,90,0.03);
+      letter-spacing: -0.03em;
+      user-select: none;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .hero__line {
+      width: 36px; height: 1px;
+      background: var(--gold);
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.1s ease forwards;
+    }
+
+    .hero__tag {
+      font-size: 0.68rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.7rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.2s ease forwards;
+    }
+
+    .hero h1 {
+      font-family: var(--font-d);
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--white);
+      opacity: 0;
+      animation: fadeUp 0.6s 0.3s ease forwards;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* -- BRAND BUTTON -- */
+    .brand-btn-wrap {
+      padding: 4rem 5% 0;
+      display: flex;
+      align-items: center;
+      gap: 3rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.5s ease forwards;
+    }
+
+    .pr-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .pr-btn__dash {
+      width: 28px; height: 1px;
+      background: rgba(200,164,90,0.5);
+      flex-shrink: 0;
+    }
+
+    .pr-btn__track { position: relative; }
+
+    .pr-btn__text {
+      display: block;
+      font-family: var(--font-d);
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #c8a45a, #e2c07a, #c8a45a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      white-space: nowrap;
+    }
+
+    .pr-btn__line {
+      position: absolute;
+      bottom: -6px; left: 0;
+      height: 1px; width: 100%;
+      background: linear-gradient(90deg, #c8a45a, transparent);
+    }
+
+    .pr-sub {
+      font-family: var(--font-b);
+      font-size: 0.62rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(200,164,90,0.45);
+    }
+
+    /* -- CONTACT SECTION -- */
+    .contact-section {
+      padding: 5rem 5%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.55fr;
+      gap: 2.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      align-items: start;
+    }
+
+    .contact-info {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 2.8rem 2.2rem;
+      position: sticky;
+      top: 82px;
+      opacity: 0;
+      animation: fadeUp 0.65s 0.2s ease forwards;
+    }
+
+    .contact-info h2 {
+      font-family: var(--font-d);
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+
+    .contact-info > p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 2.2rem;
+    }
+
+    .gold-rule {
+      width: 36px; height: 1.5px;
+      background: var(--gold);
+      margin-bottom: 2.2rem;
+    }
+
+    .info-item {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 1.6rem;
+    }
+
+    .info-icon {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: rgba(200,164,90,0.08);
+      border: 1px solid rgba(200,164,90,0.18);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold);
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .info-item h4 {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.3rem;
+      font-weight: 500;
+    }
+
+    .info-item p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .info-social {
+      display: flex;
+      gap: 0.7rem;
+      margin-top: 2.2rem;
+      padding-top: 1.8rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .info-social a {
+      width: 34px; height: 34px;
+      border: 1px solid var(--border2);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-decoration: none;
+      transition: all 0.25s;
+    }
+
+    .info-social a:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: var(--gold-dim);
+    }
+
+    .contact-form {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 2.8rem 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.65s 0.35s ease forwards;
+    }
+
+    .contact-form h3 {
+      font-family: var(--font-d);
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 0.35rem;
+    }
+
+    .contact-form > p {
+      font-size: 0.83rem;
+      color: var(--muted);
+      margin-bottom: 2.2rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.1rem;
+    }
+
+    .form-group { margin-bottom: 1.3rem; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.63rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.45rem;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--white);
+      font-family: var(--font-b);
+      font-size: 0.85rem;
+      font-weight: 300;
+      padding: 0.8rem 1rem;
+      outline: none;
+      transition: border-color 0.25s, background 0.25s;
+      appearance: none;
+    }
+
+    .form-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237a7a7a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      cursor: pointer;
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: rgba(122,122,122,0.45); }
+
+    .form-group select option { background: var(--deep); }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: rgba(200,164,90,0.5);
+      background: rgba(200,164,90,0.03);
+    }
+
+    .form-group textarea { resize: vertical; min-height: 120px; }
+
+    .submit-btn {
+      width: 100%;
+      background: var(--gold);
+      color: var(--black);
+      border: none;
+      padding: 0.95rem;
+      font-family: var(--font-b);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 0.25s, transform 0.15s;
+      margin-top: 0.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+    }
+
+    .submit-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .submit-btn:active { transform: translateY(0); }
+
+    .success-msg {
+      display: none;
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+
+    .success-msg .check {
+      width: 58px; height: 58px;
+      border-radius: 50%;
+      background: rgba(200,164,90,0.1);
+      border: 1px solid var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold);
+      font-size: 1.3rem;
+      margin: 0 auto 1.2rem;
+    }
+
+    .success-msg h4 {
+      font-family: var(--font-d);
+      font-size: 1.3rem;
+      color: var(--white);
+      margin-bottom: 0.4rem;
+    }
+
+    .success-msg p { color: var(--muted); font-size: 0.83rem; }
+
+    /* -- MAP -- */
+    .map-section { padding: 0 5% 5rem; }
+    .map-wrap { max-width: 1100px; margin: 0 auto; }
+
+    .map-label {
+      font-size: 0.63rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .map-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border2);
+    }
+
+    .map-container {
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+      height: 240px;
+      background: var(--card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .map-container::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(200,164,90,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,164,90,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .map-inner { position: relative; text-align: center; color: var(--muted); }
+
+    .map-inner i {
+      font-size: 1.8rem;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 0.7rem;
+    }
+
+    .map-inner p { font-size: 0.82rem; }
+
+    /* -- FOOTER -- */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-logo {
+      font-family: var(--font-d);
+      font-size: 0.95rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    footer p { font-size: 0.75rem; color: var(--muted2); }
+
+    .footer-links { display: flex; gap: 1.5rem; }
+
+    .footer-links a {
+      font-size: 0.75rem;
+      color: var(--muted2);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--gold); }
+
+    /* -- ANIMATIONS -- */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* -- RESPONSIVE -- */
+    @media (max-width: 820px) {
+      .contact-grid { grid-template-columns: 1fr; }
+      .contact-info { position: static; }
+      .form-row { grid-template-columns: 1fr; }
+      .menu { display: none; }
+      .brand-btn-wrap { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      footer { flex-direction: column; gap: 1.2rem; text-align: center; }
+      .footer-links { justify-content: center; }
+      .hero__car-bg { width: 260px; opacity: 0.05; }
+    }
+  </style>
+  <style>
+    /* -- En-tete categorie ------------------ */
+    .cat-banner {
+      background: var(--card);
+      border-radius: 3px;
+      padding: 2rem 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .cat-banner::before {
+      content: '';
+      position: absolute;
+      width: 250px; height: 250px;
+      background: var(--gold);
+      border-radius: 50%;
+      top: -100px; right: -60px;
+      opacity: 0.1;
+    }
+    .category-card-icon {
+      width: 80px;
+      height: 80px;
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2rem;
+      color: var(--gold);
+    }
+    .cat-banner-info h1 { font-family: var(--font-d); color: var(--gold); font-size: 28px; margin-bottom: 4px; }
+    .cat-banner-info p  { color: var(--muted); font-size: 14px; }
+
+    /* -- Category Selection ---------------- */
+    .category-selection {
+      padding: 2rem 0;
+    }
+    .category-selection h2 {
+      font-family: var(--font-d);
+      font-size: 2rem;
+      color: var(--gold);
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    .category-selection > p {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+    }
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .category-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 2rem;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: all 0.25s ease;
+      aspect-ratio: 1 / 1;
+      justify-content: center;
+    }
+    .category-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    .category-card-icon {
+      font-size: 3rem;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    .category-card h3 {
+      font-family: var(--font-d);
+      font-size: 1.4rem;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+    .category-card p {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+    .category-count {
+      font-size: 0.75rem;
+      color: var(--gold);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .search-summary {
+      margin: 1.4rem 0 1.2rem;
+      padding: 1rem 1.2rem;
+      border: 1px solid rgba(212, 175, 55, 0.28);
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.12), rgba(255,255,255,0.03));
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .search-summary strong {
+      color: var(--gold);
+      font-family: var(--font-d);
+      font-size: 1.05rem;
+    }
+
+    .search-summary span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.86rem;
+    }
+
+    .search-summary i {
+      color: var(--gold);
+    }
+
+    /* -- Grille vehicules ------------------ */
+    .cars-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .car-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex; flex-direction: column;
+      transition: all 0.22s ease;
+    }
+    .car-card:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    .car-thumb {
+      height: 140px;
+      background: var(--deep);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 52px;
+      transition: background 0.2s;
+    }
+    .car-card:hover .car-thumb { background: rgba(255,255,255,0.02); }
+    .car-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
+    .car-body-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
+    .car-body h3 { font-family: var(--font-d); font-size: 19px; color: var(--white); }
+    .car-desc { font-size: 13px; color: var(--muted); line-height: 1.55; margin-bottom: 1rem; flex: 1; }
+    .car-specs-mini {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem;
+    }
+    .spec-pill {
+      font-size: 11px; color: var(--muted);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 3px 10px;
+    }
+    .car-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 12px; border-top: 1px solid var(--border);
+    }
+    .car-price { font-size: 18px; font-weight: 700; font-family: var(--font-b); color: var(--gold); }
+    .car-price small { font-size: 12px; font-weight: 400; color: var(--muted); }
+    .car-btn {
+      font-size: 12px; font-weight: 600; color: var(--black);
+      font-family: var(--font-b); text-transform: uppercase; letter-spacing: 0.1em;
+      background: var(--gold);
+      border: none; border-radius: 2px; padding: 6px 14px;
+      cursor: pointer; transition: all 0.2s;
+      text-decoration: none;
+    }
+    .car-btn:hover { background: var(--gold-light); }
+
+    /* -- Filtre ---------------------------- */
+    .toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.25rem; flex-wrap: wrap; gap: 8px;
+    }
+    .toolbar h2 { font-family: var(--font-d); font-size: 22px; color: var(--white); }
+    .sort-select {
+      font-family: var(--font-b); font-size: 13px;
+      border: 1px solid var(--border); border-radius: 2px;
+      padding: 6px 12px; background: var(--deep); color: var(--white);
+      outline: none; cursor: pointer;
+    }
+  </style>
+  <script src="script.js"></script>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body>
+
+  <header>
+    <nav style="border-bottom:none; backdrop-filter:none; background:transparent;">
+      <a class="logo site-logo" href="index.html" aria-label="Prime Ride - Accueil">
+        <img src="img/logoimg.jfif" alt="Logo Prime Ride">
+        <span>Prime Ride</span>
+      </a>
+      <div class="menu">
+        <a href="index.html">Accueil</a>
+        <a href="about.html">A propos</a>
+        <a href="vehicules.html">Vehicules</a>
+        <a href="index.html#services">Services</a>
+        <a href="index.html#specials">Offres</a>
+        <a href="contact.html">Contact</a>
+      </div>
+
+      <div class="social">
+        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+        <a href="vehicules.html" class="book-now-btn">Reserver</a>
+      </div>
+    </nav>
+  </header>
+
+<div class="wrapper">
+
+  <!-- CATEGORY SELECTION -->
+  <div class="category-selection" id="category-selection">
+    <h2>Choisissez une Categorie de Vehicule</h2>
+    <p>Selectionnez le type de vehicule qui correspond a vos besoins</p>
+    
+    <div class="categories-grid">
+      <a href="#" class="category-card" onclick="selectCategory('citadine'); return false;">
+        <div class="category-card-icon"><i class="fas fa-city"></i></div>
+        <h3>Citadines</h3>
+        <p>Compactes & economiques - ideales pour la ville</p>
+        <span class="category-count">6 vehicules</span>
+      </a>
+
+      <a href="#" class="category-card" onclick="selectCategory('suv'); return false;">
+        <div class="category-card-icon"><i class="fas fa-car-side"></i></div>
+        <h3>SUV</h3>
+        <p>Spacieux & robustes - pour la famille ou l'aventure</p>
+        <span class="category-count">6 vehicules</span>
+      </a>
+
+      <a href="#" class="category-card" onclick="selectCategory('berline'); return false;">
+        <div class="category-card-icon"><i class="fas fa-taxi"></i></div>
+        <h3>Berlines</h3>
+        <p>Elegance & confort - voyagez avec style</p>
+        <span class="category-count">6 vehicules</span>
+      </a>
+
+      <a href="#" class="category-card" onclick="selectCategory('utilitaire'); return false;">
+        <div class="category-card-icon"><i class="fas fa-truck"></i></div>
+        <h3>Utilitaires</h3>
+        <p>Grand volume - pour vos demenagements et livraisons</p>
+        <span class="category-count">6 vehicules</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Banniere categorie -->
+  <div class="cat-banner" id="cat-banner" style="display: none;">
+    <div class="cat-banner-icon" style="background:transparent;"><i id="cat-icon" class="fas fa-city"></i></div>
+    <div class="cat-banner-info">
+      <h1 id="cat-title">Citadines</h1>
+      <p id="cat-sub">Chargement...</p>
+    </div>
+  </div>
+
+  <div class="search-summary" id="search-summary" style="display: none;"></div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <h2 id="cars-count">Vehicules disponibles</h2>
+    <select class="sort-select" id="sort-select" onchange="renderCars()">
+      <option value="default">Trier par defaut</option>
+      <option value="price-asc">Prix croissant</option>
+      <option value="price-desc">Prix decroissant</option>
+    </select>
+  </div>
+
+  <!-- Grille -->
+  <div class="cars-grid" id="cars-grid"></div>
+
+</div>
+
+  <!-- ---------- FOOTER ---------- -->
+  <footer>
+    <span class="footer-logo">Prime Ride</span>
+    <p>(c) 2026 Prime Ride. Tous droits reserves.</p>
+    <div class="footer-links">
+      <a href="#">Politique de confidentialite</a>
+      <a href="#">Conditions generales</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </footer>
+
+<script>
+/* -- Donnees ------------------------- */
+const CARS = {
+  citadine: {
+    label: 'Citadines', icon: 'img/Peugeot 208.jpg',
+    sub: 'Compactes & economiques - ideales pour la ville',
+    vehicles: [
+      { id:'c1', name:'Renault Clio',   icon:'', img:'img/Renault Clio.jpg', price:2500, badge:'Economique',
+        desc:'Parfaite pour la ville, consommation faible et facile a garer.',
+        specs:['Essence','5 places','Manuelle','Illimite'] },
+      { id:'c2', name:'Peugeot 208',    icon:'', img:'img/Peugeot 208.jpg', price:2800, badge:'Populaire',
+        desc:'Design moderne, equipements complets et conduite agreable.',
+        specs:['Diesel','5 places','Automatique','Illimite'] },
+      { id:'c3', name:'Dacia Sandero',  icon:'', img:'img/dacia sandero.jpg', price:1900, badge:'Budget',
+        desc:'Le meilleur rapport qualite-prix pour vos deplacements quotidiens.',
+        specs:['Essence','5 places','Manuelle','300 km/j'] },
+      { id:'c4', name:'Hyundai i10',    icon:'', img:'img/Hyundai i10.jpg', price:1700, badge:'Mini',
+        desc:'Tres compacte, ideale pour le stationnement en centre-ville.',
+        specs:['Essence','4 places','Manuelle','250 km/j'] },
+      { id:'c5', name:'Fiat 500',       icon:'', img:'img/fiat 500.jpeg', price:1800, badge:'Style',
+        desc:'Iconique et charmante, parfaite pour les trajets urbains.',
+        specs:['Essence','4 places','Manuelle','200 km/j'] },
+      { id:'c6', name:'Volkswagen Polo',icon:'', img:'img/Volkswagen Polo.jpg', price:2200, badge:'Fiable',
+        desc:'Solide et economique, un choix tres populaire.',
+        specs:['Diesel','5 places','Manuelle','Illimite'] },
+    ]
+  },
+  suv: {
+    label: 'SUV', icon: 'img/toyota RAV4.jpg',
+    sub: 'Spacieux & robustes - pour la famille ou l\'aventure',
+    vehicles: [
+      { id:'s1', name:'Toyota RAV4',    icon:'', img:'img/toyota RAV4.jpg', price:5500, badge:'Famille',
+        desc:'SUV spacieux avec traction integrale et grand coffre.',
+        specs:['Hybride','5 places','Automatique','Illimite'] },
+      { id:'s2', name:'Hyundai Tucson', icon:'', img:'img/Hyundai Tucson.jpg', price:4800, badge:'Confort',
+        desc:'Habitacle premium, technologie avancee et silence de roulement.',
+        specs:['Diesel','5 places','Automatique','Illimite'] },
+      { id:'s3', name:'Dacia Duster',   icon:'', img:'img/dacia duster.jpg', price:3500, badge:'Aventure',
+        desc:'Robuste et fiable pour la ville comme pour les pistes.',
+        specs:['Essence','5 places','Manuelle','350 km/j'] },
+      { id:'s4', name:'Peugeot 3008',   icon:'', img:'img/Peugeot 3008.jpg', price:5200, badge:'Premium',
+        desc:'Design sophistique et confort exceptionnel.',
+        specs:['Diesel','5 places','Automatique','Illimite'] },
+      { id:'s5', name:'Nissan Qashqai',icon:'', img:'img/Nissan Qashqai.jpg', price:4200, badge:'Polyvalent',
+        desc:'SUV equilibre parfait pour tous les usages.',
+        specs:['Essence','5 places','Automatique','Illimite'] },
+      { id:'s6', name:'Kia Sportage',  icon:'', img:'img/Kia Sportage.jpg', price:4600, badge:'Moderne',
+        desc:'Technologie de pointe et garantie longue.',
+        specs:['Hybride','5 places','Automatique','Illimite'] },
+    ]
+  },
+  berline: {
+    label: 'Berlines', icon: 'img/mercedes classe c.jpg',
+    sub: 'Elegance & confort - voyagez avec style',
+    vehicles: [
+      { id:'b1', name:'Mercedes Classe C', icon:'', img:'img/mercedes classe c.jpg', price:8000, badge:'Prestige',
+        desc:'Luxe absolu, finitions haut de gamme et conduite enveloppante.',
+        specs:['Essence','5 places','Automatique','Illimite'] },
+      { id:'b2', name:'BMW Serie 3',       icon:'', img:'img/BMW serie3.jpg', price:7500, badge:'Sportive',
+        desc:'Plaisir de conduire au rendez-vous, dynamisme et confort.',
+        specs:['Diesel','5 places','Automatique','Illimite'] },
+      { id:'b3', name:'Toyota Camry',      icon:'', img:'img/toyota camry.jpg', price:4500, badge:'Fiable',
+        desc:'Fiabilite legendaire avec grand espace interieur.',
+        specs:['Hybride','5 places','Automatique','Illimite'] },
+      { id:'b4', name:'Audi A4',          icon:'', img:'img/Audi A4.jpg', price:6800, badge:'Technologie',
+        desc:'Innovation technologique et confort premium.',
+        specs:['Diesel','5 places','Automatique','Illimite'] },
+      { id:'b5', name:'Peugeot 508',     icon:'', img:'img/Peugeot 508.jpg', price:4200, badge:'Elegance',
+        desc:'Design francais et confort de conduite exceptionnel.',
+        specs:['Diesel','5 places','Automatique','Illimite'] },
+      { id:'b6', name:'Volkswagen Passat',icon:'', img:'img/Volkswagen Passat.jpg', price:3900, badge:'Confort',
+        desc:'Spacieuse et confortable pour les longs trajets.',
+        specs:['Essence','5 places','Automatique','Illimite'] },
+    ]
+  },
+  utilitaire: {
+    label: 'Utilitaires', icon: 'img/renault trafic.jpg',
+    sub: 'Grand volume - pour vos demenagements et livraisons',
+    vehicles: [
+      { id:'u1', name:'Renault Trafic',  icon:'', img:'img/renault trafic.jpg', price:6000, badge:'Grand volume',
+        desc:'Ideal pour demenagements ou transport de materiel volumineux.',
+        specs:['Diesel','3 places','Manuelle','300 km/j'] },
+      { id:'u2', name:'Peugeot Partner', icon:'', img:'img/peugeot partner.jpg', price:3800, badge:'Compact',
+        desc:'Utilitaire compact pour livraisons et petits demenagements.',
+        specs:['Diesel','2 places','Manuelle','Illimite'] },
+      { id:'u3', name:'Ford Transit',    icon:'', img:'img/ford transit.jpg', price:6500, badge:'Robuste',
+        desc:'Fourgon polyvalent pour tous types de transport.',
+        specs:['Diesel','3 places','Manuelle','300 km/j'] },
+      { id:'u4', name:'Citroen Berlingo',icon:'', img:'img/citroen Berlingo.jpg', price:3200, badge:'Pratique',
+        desc:'Compact et facile a conduire en ville.',
+        specs:['Diesel','2 places','Manuelle','Illimite'] },
+      { id:'u5', name:'Mercedes Vito',  icon:'', img:'img/mercedes vito.jpg', price:7200, badge:'Premium',
+        desc:'Utilitaire haut de gamme avec confort optimal.',
+        specs:['Diesel','3 places','Automatique','Illimite'] },
+      { id:'u6', name:'Fiat Ducato',    icon:'', img:'img/Fiat Ducato.jpg', price:5800, badge:'Spacieux',
+        desc:'Grand volume ideal pour les demenagements importants.',
+        specs:['Diesel','3 places','Manuelle','250 km/j'] },
+    ]
+  }
+};
+
+/* -- Init ---------------------------- */
+const params = new URLSearchParams(window.location.search);
+const catKey = params.get('cat');
+const searchPlace = params.get('lieu');
+const searchStart = params.get('debut');
+const searchEnd = params.get('fin');
+let catData = null;
+
+function formatSearchDate(value) {
+  if (!value) return '';
+  const date = new Date(`${value}T00:00:00`);
+  return date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+
+function renderSearchSummary() {
+  const summary = document.getElementById('search-summary');
+  if (!summary || !searchPlace || !searchStart || !searchEnd) return;
+  summary.style.display = 'flex';
+  summary.innerHTML = `
+    <strong>Recherche lancee</strong>
+    <span><i class="fas fa-map-marker-alt"></i>${searchPlace}</span>
+    <span><i class="far fa-calendar"></i>${formatSearchDate(searchStart)} au ${formatSearchDate(searchEnd)}</span>
+    <span><i class="fas fa-car-side"></i>Suggestions disponibles ci-dessous</span>
+  `;
+}
+
+// If no category selected, show selection page
+if (!catKey) {
+  document.getElementById('category-selection').classList.add('active');
+  document.getElementById('cat-banner').style.display = 'none';
+  document.querySelector('.toolbar').style.display = 'none';
+  document.getElementById('cars-grid').style.display = 'none';
+} else {
+  // Show category content
+  document.getElementById('category-selection').style.display = 'none';
+  document.getElementById('cat-banner').style.display = 'block';
+  document.querySelector('.toolbar').style.display = 'flex';
+  document.getElementById('cars-grid').style.display = 'grid';
+  
+  catData = CARS[catKey] || CARS['citadine'];
+  document.title = `Prime Ride - ${catData.label}`;
+  document.getElementById('cat-title').textContent = catData.label;
+  document.getElementById('cat-sub').textContent   = catData.sub;
+  renderSearchSummary();
+  
+  // Set icon based on category
+  const iconMap = {
+    'citadine': 'fa-city',
+    'suv': 'fa-car-side',
+    'berline': 'fa-taxi',
+    'utilitaire': 'fa-truck'
+  };
+  const catIcon = document.getElementById('cat-icon');
+  catIcon.className = `fas ${iconMap[catKey] || 'fa-city'}`;
+  
+  renderCars();
+}
+
+function selectCategory(cat) {
+  window.location.href = `vehicules.html?cat=${cat}`;
+}
+
+function renderCars() {
+  const sort = document.getElementById('sort-select').value;
+  let list = [...catData.vehicles];
+  if (sort === 'price-asc')  list.sort((a,b) => a.price - b.price);
+  if (sort === 'price-desc') list.sort((a,b) => b.price - a.price);
+
+  document.getElementById('cars-count').textContent =
+    `${list.length} vehicule${list.length > 1 ? 's' : ''} disponible${list.length > 1 ? 's' : ''}`;
+
+  const grid = document.getElementById('cars-grid');
+  grid.innerHTML = '';
+
+  list.forEach(car => {
+    const url = `reservation.html?cat=${catKey}&id=${car.id}`;
+    const card = document.createElement('a');
+    card.className = 'car-card';
+    card.href = url;
+    card.innerHTML = `
+      <div class="car-thumb"><img src="${car.img || 'img/audi-r8.jpg'}" alt="${car.name}"></div>
+      <div class="car-body">
+        <div class="car-body-top">
+          <h3>${car.name}</h3>
+          <span class="badge">${car.badge}</span>
+        </div>
+        <p class="car-desc">${car.desc}</p>
+        <div class="car-specs-mini">
+          ${car.specs.map(s => `<span class="spec-pill">${s}</span>`).join('')}
+        </div>
+        <div class="car-footer">
+          <div class="car-price">${car.price.toLocaleString('fr-DZ')} DA <small>/jour</small></div>
+          <span class="car-btn">Choisir -></span>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+renderCars();
+</script>
+
+</body>
+</html>
